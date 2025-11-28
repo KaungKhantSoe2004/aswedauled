@@ -4,7 +4,11 @@ import { useState } from "react";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 
 // FAQ Item Component
-function FAQItem({ question, answer }) {
+interface faqItemProps {
+  question: string;
+  answer: string;
+}
+function FAQItem({ question, answer }: faqItemProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -96,14 +100,16 @@ export default function ContactPage() {
     grade: "",
   });
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLSelectElement | HTMLInputElement | HTMLTextAreaElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    console.log(name, value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Handle form submission here
     console.log("Form submitted:", formData);
@@ -630,7 +636,7 @@ export default function ContactPage() {
                     value={formData.message}
                     onChange={handleChange}
                     required
-                    rows="6"
+                    rows={Number(6)}
                     style={{
                       width: "100%",
                       padding: "1rem",
