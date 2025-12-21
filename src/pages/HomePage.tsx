@@ -3,11 +3,27 @@
 import { useState, useEffect } from "react";
 import { FiMenu, FiX, FiChevronDown } from "react-icons/fi";
 import CTASection from "./Cta";
+import { getActivities, getGalleries } from "../assets/graphql/Controllers";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "../store";
+import { setGallery } from "../features/gallerySlice";
+import { setActivity } from "../features/activitySlice";
 
 export default function Page() {
+  const backend_domain_name = import.meta.env.VITE_BACKEND_DOMAIN_NAME;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [openDropdown, setOpenDropdown] = useState(false);
+  const ReduxGalleries = useSelector((state: RootState) => state.galleries);
+  const ReduxActivities = useSelector((state: RootState) => state.activities);
+  const [activities, setActivities] = useState(ReduxActivities);
+  const [galleries, setGalleries] = useState(ReduxGalleries);
+  const [loading, setLoading] = useState({
+    activities: true,
+    galleries: true,
+    allData: true,
+  });
+  const dispatch = useDispatch();
   const bannerTexts = [
     {
       title: "Welcome to ASWEDAUL ED",
@@ -28,9 +44,39 @@ export default function Page() {
   ];
 
   const [textIndex, setTextIndex] = useState(0);
+  const fetchData = async () => {
+    try {
+      setLoading((prev) => ({ ...prev, allData: true }));
+
+      const [activitiesResponse, galleriesResponse] = await Promise.all([
+        getActivities(),
+        getGalleries(),
+      ]);
+
+      dispatch(setGallery(galleriesResponse.galleries.data));
+      dispatch(setActivity(activitiesResponse.activities.data));
+
+      setGalleries(galleriesResponse.galleries.data);
+      setActivities(activitiesResponse.activities.data);
+
+      setLoading({
+        activities: false,
+        galleries: false,
+        allData: false,
+      });
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setLoading({
+        activities: false,
+        galleries: false,
+        allData: false,
+      });
+    }
+  };
 
   // Auto-rotate banner every 5 seconds
   useEffect(() => {
+    fetchData();
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % 5);
       setTextIndex((prev) => (prev + 1) % bannerTexts.length);
@@ -87,74 +133,39 @@ export default function Page() {
     },
   ];
 
-  const activities = [
-    {
-      name: "Robotics Club",
-      image:
-        "https://images.unsplash.com/photo-1555255707-c07966088b7b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2068&q=80",
-    },
-    {
-      name: "Debate Tournament",
-      image:
-        "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-    },
-    {
-      name: "Science Fair",
-      image:
-        "https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-    },
-    {
-      name: "Sports Festival",
-      image:
-        "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-    },
-    {
-      name: "Cultural Week",
-      image:
-        "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-    },
-    {
-      name: "Tech Summit",
-      image:
-        "https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-    },
-  ];
-
-  const galleries = [
-    {
-      name: "Campus Views",
-      image:
-        "https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2068&q=80",
-    },
-    {
-      name: "Classrooms",
-      image:
-        "https://images.unsplash.com/photo-1588072432836-e10032774350?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2072&q=80",
-    },
-    {
-      name: "Labs",
-      image:
-        "https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-    },
-    {
-      name: "Events",
-      image:
-        "https://images.unsplash.com/photo-1523580494863-6f3031224c94?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-    },
-    {
-      name: "Library",
-      image:
-        "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2056&q=80",
-    },
-    {
-      name: "Facilities",
-      image:
-        "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-    },
-  ];
-
   return (
     <div className="landing-page">
+      {/* Initial Loading Overlay */}
+      {loading.allData && (
+        <div className="page-loading-overlay">
+          <div className="loader-container">
+            <div className="academic-loader">
+              <div className="book">
+                <div className="book__pg-shadow"></div>
+                <div className="book__pg"></div>
+                <div className="book__pg book__pg--2"></div>
+                <div className="book__pg book__pg--3"></div>
+                <div className="book__pg book__pg--4"></div>
+                <div className="book__pg book__pg--5"></div>
+              </div>
+              <div className="loading-text">
+                <span className="letter">L</span>
+                <span className="letter">O</span>
+                <span className="letter">A</span>
+                <span className="letter">D</span>
+                <span className="letter">I</span>
+                <span className="letter">N</span>
+                <span className="letter">G</span>
+                <span className="letter">.</span>
+                <span className="letter">.</span>
+                <span className="letter">.</span>
+              </div>
+              <div className="school-name">ASWEDAUL ED</div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ===== HERO BANNER SLIDER ===== */}
       <section
         className="hero-banner"
@@ -240,18 +251,57 @@ export default function Page() {
           <h2 className="section-title center">ACTIVITIES & EVENTS</h2>
           <div className="title-underline center"></div>
 
-          <div className="activities-grid">
-            {activities.map((activity, idx) => (
-              <div key={idx} className="activity-card">
-                <div className="activity-image">
-                  <img src={activity.image} alt={activity.name} />
+          {loading.activities ? (
+            <div className="grade-loading-container">
+              <div className="grade-spinner">
+                <div className="spinner-ring">
+                  <div className="spinner-ring-inner"></div>
+                  <div className="spinner-ring-outer"></div>
                 </div>
-                <div className="activity-content">
-                  <h3 className="activity-title">{activity.name}</h3>
+                <div className="spinner-dots">
+                  <div className="dot"></div>
+                  <div className="dot"></div>
+                  <div className="dot"></div>
                 </div>
               </div>
-            ))}
-          </div>
+              <p className="grade-loading-text">Loading Activities</p>
+              <p className="grade-loading-subtext">
+                Please wait while we fetch the latest activities...
+              </p>
+            </div>
+          ) : activities.length === 0 ? (
+            <div className="grade-empty-state">
+              <div className="empty-state-icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 100-16 8 8 0 000 16zm1-11h-2v4H8v2h4v4h2v-4h4v-2h-4V9z" />
+                </svg>
+              </div>
+              <h3 className="empty-state-title">No Activities Available</h3>
+              <p className="empty-state-text">
+                Check back soon for upcoming events and activities.
+              </p>
+            </div>
+          ) : (
+            <div className="activities-grid">
+              {activities.map((activity, idx) => (
+                <div key={idx} className="activity-card">
+                  <div className="activity-image">
+                    <img
+                      src={`${backend_domain_name}${activity.image}`}
+                      alt={activity.activityName}
+                    />
+                  </div>
+                  <div className="activity-content">
+                    <h3 className="activity-title">{activity.activityName}</h3>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -310,18 +360,57 @@ export default function Page() {
           <h2 className="section-title center">GALLERY</h2>
           <div className="title-underline center"></div>
 
-          <div className="gallery-grid">
-            {galleries.map((gallery, idx) => (
-              <div key={idx} className="gallery-card">
-                <div className="gallery-image">
-                  <img src={gallery.image} alt={gallery.name} />
+          {loading.galleries ? (
+            <div className="grade-loading-container">
+              <div className="grade-spinner">
+                <div className="spinner-ring">
+                  <div className="spinner-ring-inner"></div>
+                  <div className="spinner-ring-outer"></div>
                 </div>
-                <div className="gallery-content">
-                  <h3 className="gallery-title">{gallery.name}</h3>
+                <div className="spinner-dots">
+                  <div className="dot"></div>
+                  <div className="dot"></div>
+                  <div className="dot"></div>
                 </div>
               </div>
-            ))}
-          </div>
+              <p className="grade-loading-text">Loading Gallery</p>
+              <p className="grade-loading-subtext">
+                Fetching images from our collection...
+              </p>
+            </div>
+          ) : galleries.length === 0 ? (
+            <div className="grade-empty-state">
+              <div className="empty-state-icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zm1 4v10h14V8H5zm4.5 6.5l2.5 3 3.5-4.5 4.5 6H5l4.5-6z" />
+                </svg>
+              </div>
+              <h3 className="empty-state-title">Gallery Coming Soon</h3>
+              <p className="empty-state-text">
+                We're preparing amazing photos from our campus.
+              </p>
+            </div>
+          ) : (
+            <div className="gallery-grid">
+              {galleries.map((gallery, idx) => (
+                <div key={idx} className="gallery-card">
+                  <div className="gallery-image">
+                    <img
+                      src={`${backend_domain_name}${gallery.image}`}
+                      alt={gallery.galleryName}
+                    />
+                  </div>
+                  <div className="gallery-content">
+                    <h3 className="gallery-title">{gallery.galleryName}</h3>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -445,6 +534,288 @@ export default function Page() {
           color: #000;
           min-height: 100vh;
           font-family: "Bebas Neue", Arial, sans-serif;
+          position: relative;
+        }
+
+        /* Initial Loading Overlay - Grade Page Style */
+        .initial-loading-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 9999;
+          animation: fadeOut 0.8s ease forwards 2s;
+        }
+
+        @keyframes fadeOut {
+          to {
+            opacity: 0;
+            visibility: hidden;
+          }
+        }
+
+        .loading-content {
+          text-align: center;
+          padding: 40px;
+          background: rgba(26, 26, 26, 0.8);
+          border: 3px solid #3fa7a3;
+          border-radius: 12px;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+          min-width: 400px;
+        }
+
+        .grade-page-spinner {
+          position: relative;
+          width: 120px;
+          height: 120px;
+          margin: 0 auto 30px;
+        }
+
+        .spinner-circle {
+          position: relative;
+          width: 100%;
+          height: 100%;
+        }
+
+        .spinner-inner-circle {
+          position: absolute;
+          top: 10px;
+          left: 10px;
+          right: 10px;
+          bottom: 10px;
+          border: 4px solid transparent;
+          border-top: 4px solid #3fa7a3;
+          border-radius: 50%;
+          animation: spin 1.5s linear infinite;
+        }
+
+        .spinner-outer-circle {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          border: 4px solid rgba(63, 167, 163, 0.2);
+          border-radius: 50%;
+        }
+
+        .spinner-glow {
+          position: absolute;
+          top: -10px;
+          left: -10px;
+          right: -10px;
+          bottom: -10px;
+          background: radial-gradient(circle, rgba(63, 167, 163, 0.3) 0%, transparent 70%);
+          border-radius: 50%;
+          filter: blur(10px);
+          animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+          0%, 100% { opacity: 0.5; }
+          50% { opacity: 1; }
+        }
+
+        .loading-title {
+          color: #fff;
+          font-size: 2.5rem;
+          font-weight: bold;
+          margin-bottom: 10px;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+        }
+
+        .loading-subtitle {
+          color: #3fa7a3;
+          font-size: 1.1rem;
+          margin-bottom: 30px;
+          letter-spacing: 1px;
+        }
+
+        .loading-progress {
+          margin-top: 30px;
+        }
+
+        .progress-bar {
+          width: 100%;
+          height: 6px;
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 3px;
+          overflow: hidden;
+          margin-bottom: 10px;
+        }
+
+        .progress-fill {
+          height: 100%;
+          background: linear-gradient(90deg, #3fa7a3 0%, #2d8986 100%);
+          border-radius: 3px;
+          animation: progress 2s ease-in-out infinite;
+        }
+
+        @keyframes progress {
+          0% { width: 0%; }
+          50% { width: 70%; }
+          100% { width: 100%; }
+        }
+
+        .progress-text {
+          color: #aaa;
+          font-size: 0.9rem;
+          letter-spacing: 1px;
+        }
+
+        /* Section Loading States - Grade Page Style */
+        .grade-loading-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 80px 0;
+          background: rgba(26, 26, 26, 0.9);
+          border: 3px solid #3fa7a3;
+          border-radius: 12px;
+          margin: 20px 0;
+          min-height: 300px;
+        }
+
+        .grade-spinner {
+          position: relative;
+          width: 80px;
+          height: 80px;
+          margin-bottom: 25px;
+        }
+
+        .spinner-ring {
+          position: relative;
+          width: 100%;
+          height: 100%;
+        }
+
+        .spinner-ring-inner {
+          position: absolute;
+          top: 10px;
+          left: 10px;
+          right: 10px;
+          bottom: 10px;
+          border: 3px solid transparent;
+          border-top: 3px solid #3fa7a3;
+          border-radius: 50%;
+          animation: ringSpin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        }
+
+        .spinner-ring-outer {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          border: 3px solid rgba(63, 167, 163, 0.2);
+          border-radius: 50%;
+        }
+
+        @keyframes ringSpin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+
+        .spinner-dots {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          display: flex;
+          gap: 5px;
+        }
+
+        .dot {
+          width: 8px;
+          height: 8px;
+          background: #3fa7a3;
+          border-radius: 50%;
+          animation: dotBounce 1.4s ease-in-out infinite;
+        }
+
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes dotBounce {
+          0%, 80%, 100% { transform: scale(0); }
+          40% { transform: scale(1); }
+        }
+
+        .grade-loading-text {
+          color: #fff;
+          font-size: 1.4rem;
+          font-weight: bold;
+          margin-bottom: 10px;
+          letter-spacing: 1px;
+          text-transform: uppercase;
+        }
+
+        .grade-loading-subtext {
+          color: #aaa;
+          font-size: 1rem;
+          text-align: center;
+          max-width: 300px;
+          line-height: 1.5;
+        }
+
+        /* Empty State - Grade Page Style */
+        .grade-empty-state {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 60px 20px;
+          background: rgba(26, 26, 26, 0.9);
+          border: 2px solid #3fa7a3;
+          border-radius: 10px;
+          text-align: center;
+          margin: 20px 0;
+          min-height: 250px;
+        }
+
+        .empty-state-icon {
+          width: 80px;
+          height: 80px;
+          background: rgba(63, 167, 163, 0.1);
+          border: 2px solid #3fa7a3;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 20px;
+        }
+
+        .empty-state-icon svg {
+          width: 40px;
+          height: 40px;
+          color: #3fa7a3;
+        }
+
+        .empty-state-title {
+          color: #fff;
+          font-size: 1.5rem;
+          font-weight: bold;
+          margin-bottom: 10px;
+          letter-spacing: 1px;
+        }
+
+        .empty-state-text {
+          color: #aaa;
+          font-size: 1rem;
+          max-width: 300px;
+          line-height: 1.5;
         }
 
         .container {
@@ -690,6 +1061,11 @@ export default function Page() {
           width: 100%;
           height: 100%;
           object-fit: cover;
+          transition: transform 0.5s ease;
+        }
+
+        .activity-card:hover .activity-image img {
+          transform: scale(1.1);
         }
 
         .activity-content {
@@ -723,6 +1099,12 @@ export default function Page() {
           padding: 30px;
           border-radius: 8px;
           text-align: center;
+          transition: all 0.3s;
+        }
+
+        .achievement-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 10px 25px rgba(63, 167, 163, 0.2);
         }
 
         .achievement-card.full-width {
@@ -753,18 +1135,34 @@ export default function Page() {
           background-color: #2d2d2d;
           padding: 20px;
           border-radius: 4px;
+          transition: all 0.3s;
+        }
+
+        .grade-stat:hover {
+          background-color: #3fa7a3;
+          transform: scale(1.05);
+        }
+
+        .grade-stat:hover .grade-number {
+          color: #fff;
+        }
+
+        .grade-stat:hover .grade-label {
+          color: #e0e0e0;
         }
 
         .grade-number {
           font-size: 1.8rem;
           font-weight: bold;
           color: #3fa7a3;
+          transition: color 0.3s;
         }
 
         .grade-label {
           font-size: 0.8rem;
           color: #aaa;
           margin-top: 8px;
+          transition: color 0.3s;
         }
 
         .pass-rate {
@@ -808,6 +1206,11 @@ export default function Page() {
           width: 100%;
           height: 100%;
           object-fit: cover;
+          transition: transform 0.5s ease;
+        }
+
+        .gallery-card:hover .gallery-image img {
+          transform: scale(1.1);
         }
 
         .gallery-content {
@@ -846,6 +1249,7 @@ export default function Page() {
 
         .feature-card:hover {
           background-color: #3fa7a3;
+          transform: translateY(-5px);
         }
 
         .feature-title {
@@ -880,6 +1284,12 @@ export default function Page() {
           padding: 30px;
           border-radius: 8px;
           border: 3px solid #3fa7a3;
+          transition: all 0.3s;
+        }
+
+        .mission-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 10px 25px rgba(63, 167, 163, 0.2);
         }
 
         .mission-title {
@@ -894,47 +1304,6 @@ export default function Page() {
           font-size: 1rem;
           line-height: 1.8;
           color: #ddd;
-        }
-
-        /* CTA Section */
-        .cta-section {
-          background-color: #3fa7a3;
-          color: #fff;
-          padding: 60px 0;
-          text-align: center;
-          border-bottom-color: #000;
-        }
-
-        .cta-title {
-          font-size: 2.5rem;
-          font-weight: bold;
-          margin-bottom: 24px;
-          letter-spacing: 1px;
-        }
-
-        .cta-text {
-          font-size: 1.1rem;
-          margin-bottom: 40px;
-          line-height: 1.6;
-          opacity: 0.95;
-        }
-
-        .cta-button {
-          padding: 16px 48px;
-          background-color: #fff;
-          color: #3fa7a3;
-          border: none;
-          font-size: 1rem;
-          font-weight: bold;
-          cursor: pointer;
-          border-radius: 4px;
-          transition: all 0.3s;
-          letter-spacing: 1px;
-        }
-
-        .cta-button:hover {
-          background-color: #1a1a1a;
-          color: #3fa7a3;
         }
 
         /* Footer */
@@ -1087,12 +1456,29 @@ export default function Page() {
             text-align: center;
           }
 
-          .cta-title {
+          /* Loading Responsive */
+          .loading-content {
+            min-width: 300px;
+            padding: 30px;
+          }
+
+          .grade-page-spinner {
+            width: 100px;
+            height: 100px;
+          }
+
+          .loading-title {
             font-size: 2rem;
           }
 
-          .cta-text {
-            font-size: 1rem;
+          .grade-loading-container {
+            padding: 60px 0;
+            min-height: 250px;
+          }
+
+          .grade-spinner {
+            width: 70px;
+            height: 70px;
           }
         }
 
@@ -1136,15 +1522,90 @@ export default function Page() {
             grid-template-columns: repeat(2, 1fr);
           }
 
-          .primary-button,
-          .cta-button {
+          .primary-button {
             padding: 12px 24px;
             font-size: 0.9rem;
           }
 
-          .cta-title {
+          /* Loading Responsive */
+          .loading-content {
+            min-width: 280px;
+            padding: 20px;
+            margin: 0 15px;
+          }
+
+          .grade-page-spinner {
+            width: 80px;
+            height: 80px;
+          }
+
+          .loading-title {
             font-size: 1.8rem;
           }
+
+          .loading-subtitle {
+            font-size: 1rem;
+          }
+
+          .grade-loading-text {
+            font-size: 1.2rem;
+          }
+
+          .grade-loading-subtext {
+            font-size: 0.9rem;
+            padding: 0 10px;
+          }
+
+          .grade-empty-state {
+            padding: 40px 15px;
+          }
+
+          .empty-state-icon {
+            width: 60px;
+            height: 60px;
+          }
+
+          .empty-state-icon svg {
+            width: 30px;
+            height: 30px;
+          }
+
+          .empty-state-title {
+            font-size: 1.3rem;
+          }
+
+          .empty-state-text {
+            font-size: 0.9rem;
+          }
+                    /* Page Loading Overlay */
+        .page-loading-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+          z-index: 9999;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .loader-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 40px;
+        }
+
+        .academic-loader {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 30px;
+        }
+
         }
       `}</style>
     </div>

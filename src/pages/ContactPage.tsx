@@ -1,7 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
+import { getFaqs } from "../assets/graphql/Controllers";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "../store";
+import { setFaq } from "../features/faqSlice";
 
 // FAQ Item Component
 interface faqItemProps {
@@ -180,49 +184,19 @@ export default function ContactPage() {
       hours: "Mon-Fri: 9:00 AM - 3:00 PM",
     },
   ];
+  const reduxFaqs = useSelector((state: RootState) => state.faqs);
+  const [faqData, setFaqData] = useState(reduxFaqs);
+  const dispatch = useDispatch();
+  const fetchData = async () => {
+    const response = await getFaqs();
+    setFaqData(response.faqs.data);
+    dispatch(setFaq(response.faqs.data));
+    console.log("FaqData is", response.faqs.data);
+  };
 
-  const faqData = [
-    {
-      question: "What are the admission requirements?",
-      answer:
-        "Admission requirements vary by grade level. Generally, we require academic records, recommendation letters, and a student interview. For specific grade requirements, please contact our admissions office.",
-    },
-    {
-      question: "Do you offer financial aid or scholarships?",
-      answer:
-        "Yes, we offer various scholarship programs and financial aid options for qualifying students based on academic merit and financial need. Scholarships are available for academic excellence, sports, arts, and community service.",
-    },
-    {
-      question: "What is the student-to-teacher ratio?",
-      answer:
-        "Our average student-to-teacher ratio is 15:1, ensuring personalized attention and quality education for every student. In specialized programs and advanced courses, the ratio is often even lower.",
-    },
-    {
-      question: "Are there extracurricular activities available?",
-      answer:
-        "We offer over 30 different extracurricular activities including sports, arts, robotics, debate, and community service programs. Students are encouraged to participate in at least one extracurricular activity each semester.",
-    },
-    {
-      question: "What curriculum do you follow?",
-      answer:
-        "We follow both CBSE and State Board curricula, supplemented with our own innovative teaching methodologies. Our curriculum is designed to prepare students for both national and international higher education.",
-    },
-    {
-      question: "What are the school hours?",
-      answer:
-        "Regular school hours are from 8:00 AM to 3:00 PM, Monday through Friday. Extended care and after-school programs are available until 5:30 PM for working parents.",
-    },
-    {
-      question: "Do you provide transportation?",
-      answer:
-        "Yes, we provide safe and reliable transportation services covering most areas in the city. Our buses are equipped with GPS tracking, CCTV cameras, and trained attendants for student safety.",
-    },
-    {
-      question: "How can parents get involved?",
-      answer:
-        "We encourage parent involvement through our Parent-Teacher Association (PTA), volunteer programs, and regular parent-teacher meetings. Parents can also participate in school events and workshops.",
-    },
-  ];
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <div className="contact-page">

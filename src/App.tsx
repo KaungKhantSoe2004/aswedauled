@@ -9,10 +9,10 @@ import Header from "./components/Header";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import { useEffect, useState } from "react";
+import GradePage from "./pages/Grades/one";
+import { useSelector } from "react-redux";
 
 function App() {
-  useEffect(() => {}, []);
-
   return (
     <Router>
       <div className="min-h-screen bg-red-300 max-w-screen overflow-visible">
@@ -29,6 +29,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/grades/:grade" element={<GradePage />} />
           </Routes>
         </main>
         <Footer />
@@ -38,5 +39,3 @@ function App() {
 }
 
 export default App;
-// API needed
-// Home Page, Bike Info, Phone Info,

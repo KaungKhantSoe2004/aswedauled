@@ -1,14 +1,14 @@
+
 import { configureStore } from "@reduxjs/toolkit";
-import BikeReducer from "./features/bikeSlice";
-import PhoneReducer from "./features/phoneSlice";
-import FavCountReducer from "./features/favCountSlice";
-import BicycleReducer from "./features/bicycleSlice";
+import FaqSlice from "./features/faqSlice";
+import activitySlice from "./features/activitySlice";
+import gallerySlice from "./features/gallerySlice";
+
 export const store = configureStore({
   reducer: {
-    bikes: BikeReducer,
-    phones: PhoneReducer,
-    bicycles: BicycleReducer,
-    counts: FavCountReducer,
+    faqs: FaqSlice,
+    activities: activitySlice,
+    galleries: gallerySlice,
   },
 });
 
