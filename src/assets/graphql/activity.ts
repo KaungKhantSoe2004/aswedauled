@@ -29,7 +29,6 @@ export async function getActivities() {
         withCredentials: true,
       }
     );
-    console.log(response);
     if (response.data.errors) {
       return {
         success: false,

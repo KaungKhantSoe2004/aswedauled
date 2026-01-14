@@ -323,7 +323,7 @@ export default function GradePage() {
 
     try {
       const response = await createAdmission(formData, displayGrade);
-      console.log(response);
+
       if (response.status === true) {
         setSubmitSuccess(true);
         setFormData({

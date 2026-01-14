@@ -15,7 +15,7 @@ export async function getState(query: string) {
         withCredentials: true,
       }
     );
-    console.log(response.data);
+    
     if (response.data.errors) {
       return {
         success: false,
@@ -82,7 +82,6 @@ export async function getActivities() {
       }
     }
   `;
-  console.log("ok bro ");
   return await getState(query);
 }
 
@@ -167,8 +166,7 @@ export async function createAdmission(
       formData.append("prevSchool_doc", file);
     });
   }
-  console.log(formData);
-  // return;
+
   const response = await axios.post(
     "http://localhost:1500/api/admissions/createAdmission",
     formData,
@@ -179,5 +177,4 @@ export async function createAdmission(
     }
   );
   return response.data;
-  console.log(response.data);
 }

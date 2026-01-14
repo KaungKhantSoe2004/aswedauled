@@ -27,19 +27,10 @@ export default function AdmissionForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
+
     alert("Application submitted successfully!");
 
-    // You can add API call here later
-    // try {
-    //   const response = await fetch('/api/admissions', {
-    //     method: 'POST',
-    //     body: JSON.stringify(formData)
-    //   });
-    //   // Handle response
-    // } catch (error) {
-    //   console.error('Error submitting form:', error);
-    // }
+
   };
 
   const handleInputChange = (
