@@ -15,7 +15,7 @@ export const FaqSlice = createSlice({
   reducers: {
     setFaq: (state, action: PayloadAction<Faq[]>) => {
       state.push(...action.payload);
-      console.log(state);
+     
     },
   },
 });

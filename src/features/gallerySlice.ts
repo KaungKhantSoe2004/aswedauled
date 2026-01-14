@@ -18,7 +18,7 @@ export const gallerySlice = createSlice({
   initialState,
   reducers: {
     setGallery: (state, action: PayloadAction<gallery[]>) => {
-      console.log(action.payload);
+
       state.push(...action.payload);
     },
   },

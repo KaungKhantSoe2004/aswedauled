@@ -19,7 +19,7 @@ export default function Header() {
   const [isMobile, setIsMobile] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const grades = Array.from({ length: 12 }, (_, i) => `Grade ${i + 1}`);
+  const grades = Array.from({ length: 12 }, (_, i) => `${i + 1}`);
 
   useEffect(() => {
     const handleResize = () => {
@@ -58,8 +58,7 @@ export default function Header() {
     setSelectedGrade(grade);
     setGradesOpen(false);
     setIsOpen(false);
-    // Navigate to grade page or filter content
-    navigate(`/grades/${grade.toLowerCase().replace(" ", "-")}`);
+    navigate(`/grades/${grade}`);
   };
 
   if (!isMobile) {
@@ -310,7 +309,7 @@ export default function Header() {
                           }
                         }}
                       >
-                        {grade}
+                       G-{grade}
                       </button>
                     ))}
                   </div>

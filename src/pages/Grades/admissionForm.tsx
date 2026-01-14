@@ -97,9 +97,9 @@ export default function AdmissionForm({
             <div className="info-item">
               <span>Age Requirement:</span>
               <strong>
-                {grade === "Grade 1"
+                {grade === "1"
                   ? "5-6 years"
-                  : grade === "Grade 7"
+                  : grade === "7"
                   ? "11-12 years"
                   : "16-17 years"}
               </strong>
@@ -107,9 +107,9 @@ export default function AdmissionForm({
             <div className="info-item">
               <span>Documents Needed:</span>
               <strong>
-                {grade === "Grade 1"
+                {grade === "1"
                   ? "4 items"
-                  : grade === "Grade 7"
+                  : grade === "7"
                   ? "5 items"
                   : "5 items"}
               </strong>

@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { getFaqs } from "../assets/graphql/Controllers";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../store";
 import { setFaq } from "../features/faqSlice";
+import emailjs from '@emailjs/browser';
 
 // FAQ Item Component
 interface faqItemProps {
@@ -25,7 +26,7 @@ function FAQItem({ question, answer }: faqItemProps) {
         overflow: "hidden",
         transition: "all 0.3s ease",
       }}
-      className="FAQItem" // Added class for mobile targeting
+      className="FAQItem"
     >
       {/* Question Header */}
       <button
@@ -69,7 +70,7 @@ function FAQItem({ question, answer }: faqItemProps) {
 
       {/* Answer Content */}
       <div
-        className="answer-content" // Added class for mobile targeting
+        className="answer-content"
         style={{
           maxHeight: isOpen ? "500px" : "0",
           opacity: isOpen ? 1 : 0,
@@ -95,6 +96,8 @@ function FAQItem({ question, answer }: faqItemProps) {
 }
 
 export default function ContactPage() {
+  const formRef = useRef<HTMLFormElement>(null);
+  const [isSending, setIsSending] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -110,22 +113,67 @@ export default function ContactPage() {
     >
   ) => {
     const { name, value } = e.target;
-    console.log(name, value);
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Handle form submission here
-    console.log("Form submitted:", formData);
-    alert("Thank you for your message! We'll get back to you soon.");
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      subject: "",
-      message: "",
-      grade: "",
-    });
+    
+    if (!formRef.current) {
+      alert("Form reference not found. Please refresh the page.");
+      return;
+    }
+
+    setIsSending(true);
+
+    // Prepare form data for EmailJS
+    const templateParams = {
+      from_name: formData.name,
+      from_email: formData.email,
+      phone: formData.phone,
+      subject: formData.subject,
+      message: formData.message,
+      grade: formData.grade,
+      to_name: "Aswedaul Ed Admissions"
+    };
+
+    emailjs
+      .send(
+        "service_kow2nt9", // Your EmailJS service ID
+        "template_cb400bp", // Your EmailJS template ID
+        templateParams,
+        "taWHxGleX6BjcDvid" // Your EmailJS public key
+      )
+      .then(
+        (response) => {
+          setIsSending(false);
+          console.log("✅ Email sent successfully!", response.status, response.text);
+          alert("Thank you for your message! We'll get back to you soon.");
+          
+          // Reset form
+          setFormData({
+            name: "",
+            email: "",
+            phone: "",
+            subject: "",
+            message: "",
+            grade: "",
+          });
+          
+          // Reset form reference if needed
+          if (formRef.current) {
+            formRef.current.reset();
+          }
+        },
+        (error) => {
+          setIsSending(false);
+          console.error("❌ Error sending email:", error);
+          alert("Failed to send message. Please try again later.");
+        }
+      );
   };
 
   const contactDetails = [
@@ -184,14 +232,19 @@ export default function ContactPage() {
       hours: "Mon-Fri: 9:00 AM - 3:00 PM",
     },
   ];
+  
   const reduxFaqs = useSelector((state: RootState) => state.faqs);
   const [faqData, setFaqData] = useState(reduxFaqs);
   const dispatch = useDispatch();
+  
   const fetchData = async () => {
-    const response = await getFaqs();
-    setFaqData(response.faqs.data);
-    dispatch(setFaq(response.faqs.data));
-    console.log("FaqData is", response.faqs.data);
+    try {
+      const response = await getFaqs();
+      setFaqData(response.faqs.data);
+      dispatch(setFaq(response.faqs.data));
+    } catch (error) {
+      console.error("Error fetching FAQs:", error);
+    }
   };
 
   useEffect(() => {
@@ -402,7 +455,6 @@ export default function ContactPage() {
             className="contact-form-grid"
             style={{
               display: "grid",
-              /* Base desktop grid - 1fr 1fr */
               gridTemplateColumns: "1fr 1fr",
               gap: "4rem",
               alignItems: "start",
@@ -431,7 +483,7 @@ export default function ContactPage() {
                 }}
               ></div>
 
-              <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+              <form ref={formRef} onSubmit={handleSubmit} style={{ width: "100%" }}>
                 <div
                   className="form-row"
                   style={{
@@ -625,28 +677,33 @@ export default function ContactPage() {
 
                 <button
                   type="submit"
+                  disabled={isSending}
                   style={{
                     width: "100%",
                     padding: "1.2rem 2rem",
-                    backgroundColor: "#3FA7A3",
+                    backgroundColor: isSending ? "#666" : "#3FA7A3",
                     color: "#fff",
                     border: "none",
                     fontSize: "1.1rem",
                     fontWeight: "700",
-                    cursor: "pointer",
+                    cursor: isSending ? "not-allowed" : "pointer",
                     borderRadius: "4px",
                     fontFamily: "BeBas Neue, sans-serif",
                     letterSpacing: "1px",
                     transition: "all 0.3s ease",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#2d8a83";
+                    if (!isSending) {
+                      e.currentTarget.style.backgroundColor = "#2d8a83";
+                    }
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "#3FA7A3";
+                    if (!isSending) {
+                      e.currentTarget.style.backgroundColor = "#3FA7A3";
+                    }
                   }}
                 >
-                  SEND MESSAGE
+                  {isSending ? "SENDING..." : "SEND MESSAGE"}
                 </button>
               </form>
             </div>
@@ -826,8 +883,6 @@ export default function ContactPage() {
             padding: 4rem 0 !important;
           }
 
-          /* FAQ SECTION REINSTATEMENT: REMOVED display: none; */
-
           /* Contact Details Grid */
           .contact-details-grid {
             grid-template-columns: 1fr !important;
@@ -836,7 +891,6 @@ export default function ContactPage() {
 
           /* Contact Form Section: FIX THE STACKING ORDER */
           .contact-form-grid {
-            /* Force to single column layout */
             grid-template-columns: 1fr !important; 
             gap: 3rem !important;
           }
@@ -862,14 +916,14 @@ export default function ContactPage() {
           /* Departments Section */
           .departments-grid {
             display: flex !important;
-            flex-direction: column !important;
+            flexDirection: column !important;
             gap: 1rem !important;
           }
 
           /* Hero Section */
           .contact-hero {
             height: 40vh !important;
-            min-height: 350px !important;
+            minHeight: 350px !important;
             text-align: center;
           }
 
