@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FiMenu, FiX, FiChevronDown } from "react-icons/fi";
 import CTASection from "./Cta";
 import { getActivities, getGalleries } from "../assets/graphql/Controllers";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,9 +10,7 @@ import { setActivity } from "../features/activitySlice";
 
 export default function Page() {
   const backend_domain_name = import.meta.env.VITE_BACKEND_DOMAIN_NAME;
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [openDropdown, setOpenDropdown] = useState(false);
   const ReduxGalleries = useSelector((state: RootState) => state.galleries);
   const ReduxActivities = useSelector((state: RootState) => state.activities);
   const [activities, setActivities] = useState(ReduxActivities);
@@ -106,8 +103,6 @@ export default function Page() {
       label: "Slide 5",
     },
   ];
-
-  const grades = Array.from({ length: 12 }, (_, i) => `Grade ${i + 1}`);
 
   const offerings = [
     {

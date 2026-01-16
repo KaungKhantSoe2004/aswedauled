@@ -8,9 +8,7 @@ import Footer from "./components/Footer";
 import Header from "./components/Header";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
-import { useEffect, useState } from "react";
 import GradePage from "./pages/Grades/one";
-import { useSelector } from "react-redux";
 
 function App() {
   return (

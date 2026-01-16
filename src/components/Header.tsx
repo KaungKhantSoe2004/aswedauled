@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useState, useRef, useEffect } from "react";
 import {
   FiMenu,
@@ -12,7 +11,6 @@ import {
 import { useNavigate } from "react-router-dom";
 
 export default function Header() {
-  const backend_domain_name = import.meta.env.VITE_BACKEND_DOMAIN_NAME;
   const [isOpen, setIsOpen] = useState(false);
   const [gradesOpen, setGradesOpen] = useState(false);
   const [selectedGrade, setSelectedGrade] = useState<string | null>(null);
