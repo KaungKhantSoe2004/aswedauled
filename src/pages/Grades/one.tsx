@@ -1615,9 +1615,9 @@ export default function GradePage() {
                           <img 
                             src={ `${backend_domain_name}uploads/${teacher.profile}`} 
                             alt={teacher.name}
-                            // onError={(e) => {
-                            //   (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80";
-                            // }}
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80";
+                            }}
                           />
                         </div>
                         <div className="teacher-grade-badge">Grade {teacher.grade}</div>
