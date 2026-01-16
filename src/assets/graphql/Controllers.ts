@@ -4,7 +4,7 @@ import type { AdmissionType } from "../types";
 export async function getState(query: string) {
   try {
     const response = await axios.post(
-      `http://localhost:1500/graphql`,
+      `https://eduserbackend.z256600-ll9lz.ps02.zwhhosting.com/graphql`,
       { query },
       {
         headers: {
@@ -166,7 +166,7 @@ export async function createAdmission(
   }
 
   const response = await axios.post(
-    "http://localhost:1500/api/admissions/createAdmission",
+    "https://eduserbackend.z256600-ll9lz.ps02.zwhhosting.com/api/admissions/createAdmission",
     formData,
     {
       headers: {

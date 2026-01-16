@@ -19,7 +19,7 @@ export async function getActivities() {
 
   try {
     const response = await axios.post(
-      `http://localhost:1500/graphql`,
+      `https://eduserbackend.z256600-ll9lz.ps02.zwhhosting.com/graphql`,
       { query },
       {
         headers: {
