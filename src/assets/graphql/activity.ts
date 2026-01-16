@@ -1,6 +1,5 @@
 import axios, { AxiosError } from "axios"; // Import AxiosError for type checking
 
-const backend = import.meta.env.VITE_BACKEND_URL;
 
 export async function getActivities() {
   const query = `

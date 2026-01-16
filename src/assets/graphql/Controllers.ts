@@ -1,8 +1,6 @@
 import axios, { AxiosError } from "axios"; // Import AxiosError for type checking
 import type { AdmissionType } from "../types";
 
-const backend_domain_name = import.meta.env.VITE_BACKEND_URL;
-
 export async function getState(query: string) {
   try {
     const response = await axios.post(
