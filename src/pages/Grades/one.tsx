@@ -1613,7 +1613,7 @@ export default function GradePage() {
                       <div className="teacher-image-container">
                         <div className="teacher-image">
                           <img 
-                            src={ `${backend_domain_name}/uploads/${teacher.profile}`} 
+                            src={ `${backend_domain_name}uploads/${teacher.profile}`} 
                             alt={teacher.name}
                             // onError={(e) => {
                             //   (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80";
